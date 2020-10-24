@@ -1,0 +1,18 @@
+no
+citeste numar n;
+variabila numar myVector[50];
+
+bucla i start 0 stop n
+	myVector[i] = citeste numar a;
+sfarsit;
+
+variabila numar suma;
+suma = 0;
+
+bucla i start 0 stop n
+	suma += myVector[i];
+sfarsit;
+
+listeaza "Suma numerelor este: ";
+listeaza suma;
+gata.

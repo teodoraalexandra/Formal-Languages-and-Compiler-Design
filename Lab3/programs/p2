@@ -1,0 +1,14 @@
+no
+citeste numar n;
+variabila bool estePrim;
+
+este (n <= 1) ? atunci estePrim = False sfarsit;
+        
+bucla i start 2 stop n
+    este (n % i == 0) ? atunci estePrim = False
+			altfel estePrim = True sfarsit;
+sfarsit;
+  
+este (estePrim == True) ? atunci listeaza "Este prim"
+			  altfel listeaza "Nu este prim" sfarsit;
+gata.
