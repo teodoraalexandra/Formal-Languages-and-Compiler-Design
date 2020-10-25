@@ -10,7 +10,7 @@ variabila numar suma;
 suma = 0;
 
 bucla i start 0 stop n
-	suma += myVector[i];
+	suma = suma + myVector[i];
 sfarsit;
 
 listeaza "Suma numerelor este: ";
