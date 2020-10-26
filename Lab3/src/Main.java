@@ -4,7 +4,8 @@ import model.CustomScanner;
 public class Main {
 
     public static void main(String[] args) {
-        CustomScanner scanner = new CustomScanner("programs/p3");
+        CustomScanner scanner = new CustomScanner("programs/p1");
         scanner.scan();
+        scanner.classifyTokens();
     }
 }
