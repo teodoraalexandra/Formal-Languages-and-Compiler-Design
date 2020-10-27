@@ -1,0 +1,48 @@
+program ::= "no" decllist ";" cmpdstmt "gata"
+
+decllist ::= declaration | declaration ";" decllist
+declaration ::= "variabila" type IDENTIFIER 
+
+type1 ::= "bool" | "char" | "numar" | "real"
+arraydecl ::= type1 IDENTIFIER "[" nr "]" 
+type  ::= type1 | arraydecl
+
+cmpdstmt ::= "{" stmtlist "}"
+
+stmtlist ::= stmt | stmt ";" stmtlist
+stmt ::= simplstmt | structstmt
+
+simplstmt ::= assignstmt | iostmt
+
+assignstmt ::= IDENTIFIER "=" expression
+
+expression ::= expression symbol term | term
+symbol ::= "+" | "-" | "*" | "//" | "/" | "%"
+term ::= term symbol factor | factor
+factor ::= "(" expression ")" | IDENTIFIER | IDENTIFIER "[" IDENTIFIER | positive-number-constant "]"
+
+iostmt ::= "citeste" type IDENTIFIER | "listeaza" IDENTIFIER
+
+structstmt ::= cmpdstmt | ifstmt | whilestmt | forstmt
+
+ifstmt ::= "este" "(" conditionlist ")" "?" "atunci" stmtlist "sfarsit" ["altfel" stmtlist "sfarsit"]
+whilestmt ::= "cattimp" conditionlist "executa" stmtlist "sfarsit"
+forstmt ::= "bucla" IDENTIFIER "start" IDENTIFIER "stop" IDENTIFIER ["pas" IDENTIFIER] stmtlist "sfarsit"
+
+conditionlist ::= condition | condition OPERATION condition
+condition ::= "(" expression RELATION expression ")"
+RELATION ::= "<" | "<=" | "==" | "<>" | ">=" | ">"
+OPERATION ::= "si" | "sau"
+
+positive-number-constant ::= "0" | non-zero-digit {digit} 
+non-zero-digit ::= "1" | .. | "9"
+digit ::= "0" | non-zero-digit
+
+
+
+
+
+
+
+
+

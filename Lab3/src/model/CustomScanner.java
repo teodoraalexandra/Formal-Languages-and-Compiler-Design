@@ -21,7 +21,8 @@ import java.util.*;
 
 public class CustomScanner {
     private String fileName;
-    private boolean isLexicallyCorrect = true;
+    private boolean isStringLexicallyCorrect = true;
+    private boolean isCharLexicallyCorrect = true;
     private List<String> tokenList = new ArrayList<String>();
     private List<String> separatorList = new ArrayList<String>();
     private List<String> detectedTokens = new ArrayList<String>();
@@ -31,6 +32,8 @@ public class CustomScanner {
     private List<String> regularRelational = new ArrayList<String>();
     private int index = 0;
     private String stringConstant = "";
+    private String charConstant = "";
+    private int currentLine = -1;
 
     public CustomScanner(String fileName) {
        this.fileName = fileName;
@@ -62,7 +65,7 @@ public class CustomScanner {
        try {
           File myObj = new File("scanner_input/token");
           Scanner myReader = new Scanner(myObj);
-          for (int i = 0; i < 27; i++){
+          for (int i = 0; i < 28; i++){
              String data = myReader.nextLine();
              separatorList.add(data);
           }
@@ -81,7 +84,25 @@ public class CustomScanner {
     }
 
     private Boolean isIdentifier(String token){
-        return token.matches("(^[a-zA-Z][a-zA-Z0-9]*)");
+        return token.matches("(^[a-zA-Z][a-zA-Z0-9 _]*)");
+    }
+
+    private Boolean isStringConstant(String token) {
+        if (token.charAt(0) == '"' && token.charAt(token.length() - 2) == '"') {
+            String withoutQuote = token.substring(1, token.length() - 2);
+            return withoutQuote.length() > 1;
+        } else {
+            return false;
+        }
+    }
+
+    private Boolean isCharConstant(String token) {
+        if (String.valueOf(token.charAt(0)).equals("'") && String.valueOf(token.charAt(token.length() - 2)).equals("'")) {
+            String withoutQuote = token.substring(1, token.length() - 2);
+            return withoutQuote.length() <= 1;
+        } else {
+            return false;
+        }
     }
 
     private Boolean isReservedOperatorSeparator(String myToken) {
@@ -96,13 +117,14 @@ public class CustomScanner {
     public void classifyTokens() {
         for (String token : this.detectedTokens) {
             if (isReservedOperatorSeparator(token)) {
-                System.out.println("PIF " + token + " -1");
-            } else if (isIdentifier(token) || isConstant(token)) {
+                //System.out.println("PIF " + token + " -1");
+            } else if (isIdentifier(token) || isConstant(token)
+                    || isStringConstant(token) || isCharConstant(token)) {
                 // index is the position from the ST
-                System.out.println("PIF " + token + " " + index);
+                //System.out.println("PIF " + token + " " + index);
                 index++;
             } else {
-                System.out.println("LEXICAL ERROR" + token);
+                System.out.println("LEXICAL ERROR " + token + " AT LINE " + (currentLine - 1));
             }
         }
     }
@@ -113,9 +135,9 @@ public class CustomScanner {
           Scanner myReader = new Scanner(myObj);
           while (myReader.hasNextLine()) {
              Scanner data = new Scanner(myReader.nextLine());
+             currentLine ++;
              while (data.hasNext()) {
                 String word = data.next();
-
                 boolean hasSeparator = false;
 
                 for (String separator : separatorList) {
@@ -126,12 +148,16 @@ public class CustomScanner {
                        break;
                     }
                 }
-                if (!hasSeparator && isLexicallyCorrect) {
-                    detectedTokens.add(word);
-                }
-                if (!hasSeparator && !isLexicallyCorrect) {
+
+                if (!hasSeparator && !isStringLexicallyCorrect) {
                     stringConstant += word + " ";
                 }
+                if (!hasSeparator && !isCharLexicallyCorrect) {
+                    charConstant += word + " ";
+                }
+                 if (!hasSeparator && isStringLexicallyCorrect && isCharLexicallyCorrect) {
+                     detectedTokens.add(word);
+                 }
              }
           }
           myReader.close();
@@ -150,30 +176,73 @@ public class CustomScanner {
 
         boolean specialCase = false;
         boolean containsRelational = false;
+        char doubleQuotes = '"';
+        String stringDoubleQuotes = String.valueOf(doubleQuotes);
 
-        if (separator.charAt(0) == '"' && !isLexicallyCorrect) {
+        // String part
+        if (word.contains(stringDoubleQuotes) && !isStringLexicallyCorrect) {
             specialCase = true;
-            isLexicallyCorrect = true;
+
+            this.isStringLexicallyCorrect = true;
             if (word.charAt(word.length() - 1) == ';') {
                 String newWord = word.substring(0, word.length() - 1);
                 stringConstant += newWord + " ";
                 detectedTokens.add(stringConstant);
                 detectedTokens.add(";");
+                stringConstant = "";
+                return;
             } else {
                 stringConstant += word + " ";
                 detectedTokens.add(stringConstant);
+                stringConstant = "";
+                return;
             }
         }
 
-        if (!isLexicallyCorrect) {
+        if (!isStringLexicallyCorrect) {
             specialCase = true;
             stringConstant += word + " ";
+            return;
         }
 
-        if (separator.charAt(0) == '"' && isLexicallyCorrect) {
+        if (separator.charAt(0) == '"' && isStringLexicallyCorrect) {
             specialCase = true;
-            isLexicallyCorrect = false;
+            isStringLexicallyCorrect = false;
             stringConstant += word + " ";
+            return;
+        }
+
+        // Char part
+        if (word.contains("'") && !isCharLexicallyCorrect) {
+            specialCase = true;
+
+            this.isCharLexicallyCorrect = true;
+            if (word.charAt(word.length() - 1) == ';') {
+                String newWord = word.substring(0, word.length() - 1);
+                charConstant += newWord + " ";
+                detectedTokens.add(charConstant);
+                detectedTokens.add(";");
+                charConstant = "";
+                return;
+            } else {
+                charConstant += word + " ";
+                detectedTokens.add(charConstant);
+                charConstant = "";
+                return;
+            }
+        }
+
+        if (!isCharLexicallyCorrect) {
+            specialCase = true;
+            charConstant += word + " ";
+            return;
+        }
+
+        if (separator.equals("'") && isCharLexicallyCorrect) {
+            specialCase = true;
+            isCharLexicallyCorrect = false;
+            charConstant += word + " ";
+            return;
         }
 
         if (separator.equals("(")) {
@@ -204,19 +273,12 @@ public class CustomScanner {
                     detectedTokens.add(regularSeparator);
                     detectedTokens.add(LHS[0]);
                     detectedTokens.add(")");
-                    //System.out.println("(");
-                    //System.out.println(RHS[1]);
-                    //System.out.println(regularSeparator);
-                    //System.out.println(LHS[0]);
-                    //System.out.println(")");
                 }
             }
             if (!containsRelational) {
                 splitList = word.split("\\(");
                 detectedTokens.add(separator);
                 detectedTokens.add(splitList[1]);
-                //System.out.println(separator);
-                //System.out.println(splitList[1]);
             }
         }
 
@@ -225,8 +287,6 @@ public class CustomScanner {
             splitList = word.split("\\)");
             detectedTokens.add(splitList[0]);
             detectedTokens.add(separator);
-            //System.out.println(splitList[0]);
-            //System.out.println(separator);
         }
 
         if (separator.equals("[")) {
@@ -234,33 +294,24 @@ public class CustomScanner {
             splitList = word.split("\\[");
             detectedTokens.add(splitList[0]);
             detectedTokens.add(separator);
-            //System.out.println(splitList[0]);
-            //System.out.println(separator);
             String[] LHS = splitList[1].split("\\]");
             if (LHS.length == 1) {
                 detectedTokens.add(LHS[0]);
                 detectedTokens.add("]");
-                //System.out.println(LHS[0]);
-                //System.out.println("]");
             } else if (LHS.length == 2) {
                 detectedTokens.add(LHS[0]);
                 detectedTokens.add("]");
                 detectedTokens.add(LHS[1]);
-                //System.out.println(LHS[0]);
-                //System.out.println("]");
-                //System.out.println(LHS[1]);
             }
         }
 
         if (separator.equals("?")) {
             detectedTokens.add(separator);
-            //System.out.println(separator);
             specialCase = true;
         }
 
         if (separator.equals("+")) {
             detectedTokens.add(separator);
-            //System.out.println(separator);
             specialCase = true;
         }
 
@@ -268,8 +319,6 @@ public class CustomScanner {
             splitList = word.split("\\.");
             detectedTokens.add(splitList[0]);
             detectedTokens.add(separator);
-            //System.out.println(splitList[0]);
-            //System.out.println(separator);
             specialCase = true;
         }
 
@@ -277,23 +326,19 @@ public class CustomScanner {
             splitList = word.split(separator);
             if (splitList.length == 0) {
                 detectedTokens.add(separator);
-                //System.out.println(separator);
             }
+
             if (splitList.length == 1) {
                 detectedTokens.add(splitList[0]);
                 detectedTokens.add(separator);
-                //System.out.println(splitList[0]);
-                //System.out.println(separator);
             }
+
             if (splitList.length == 2) {
                 if (!splitList[0].equals("")) {
                     detectedTokens.add(splitList[0]);
-                    //System.out.println(splitList[0]);
                 }
                 detectedTokens.add(separator);
                 detectedTokens.add(splitList[1]);
-                //System.out.println(separator);
-                //System.out.println(splitList[1]);
             }
         }
     }
