@@ -1,5 +1,7 @@
 package model;
 
+import javafx.util.Pair;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -25,7 +27,7 @@ public class CustomScanner {
     private boolean isCharLexicallyCorrect = true;
     private List<String> tokenList = new ArrayList<String>();
     private List<String> separatorList = new ArrayList<String>();
-    private List<String> detectedTokens = new ArrayList<String>();
+    private List<String> detectedTokens = new ArrayList<>();
     private Map<String, Integer> PIF = new HashMap<String, Integer>();
     private Map<Integer, String> ST = new HashMap<Integer, String>();
     private List<String> specialRelational = new ArrayList<String>();
@@ -34,6 +36,7 @@ public class CustomScanner {
     private String stringConstant = "";
     private String charConstant = "";
     private int currentLine = -1;
+
 
     public CustomScanner(String fileName) {
        this.fileName = fileName;
@@ -115,17 +118,25 @@ public class CustomScanner {
     }
 
     public void classifyTokens() {
-        for (String token : this.detectedTokens) {
+        // Pair is token + line of token
+        for (String token: this.detectedTokens) {
             if (isReservedOperatorSeparator(token)) {
-                //System.out.println("PIF " + token + " -1");
+                System.out.println("PIF " + token + " -1");
             } else if (isIdentifier(token) || isConstant(token)
                     || isStringConstant(token) || isCharConstant(token)) {
                 // index is the position from the ST
-                //System.out.println("PIF " + token + " " + index);
+                System.out.println("PIF " + token + " " + index);
                 index++;
             } else {
                 System.out.println("LEXICAL ERROR " + token + " AT LINE " + (currentLine - 1));
             }
+        }
+
+        if (!isStringLexicallyCorrect) {
+            System.out.println("LEXICAL ERROR: DOUBLE QUOTES NOT CLOSED AT LINE " + (currentLine - 1));
+        }
+        if (!isCharLexicallyCorrect) {
+            System.out.println("LEXICAL ERROR: SINGLE QUOTES NOT CLOSED AT LINE " + (currentLine - 1));
         }
     }
 
@@ -144,7 +155,7 @@ public class CustomScanner {
                     // General separator cases
                     if (word.contains(separator)) {
                        hasSeparator = true;
-                       this.splitWordWithSeparator(word, separator);
+                       this.splitWordWithSeparator(word, separator, currentLine);
                        break;
                     }
                 }
@@ -167,7 +178,7 @@ public class CustomScanner {
        }
     }
 
-    private void splitWordWithSeparator(String word, String separator) {
+    private void splitWordWithSeparator(String word, String separator, Integer line) {
         String[] splitList;
 
         // Parenthesis

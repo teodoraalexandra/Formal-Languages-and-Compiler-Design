@@ -6,7 +6,7 @@ variabila numar maxim;
 
 este (a >= b) si (a >= c) ? atunci maxim = a sfarsit;
 este (b >= a) si (b >= c) ? atunci maxim = b sfarsit;
-este (c >= a) si (c >=b) ? atunci maxim = c sfarsit;
+este (c >= a) si (c >= b) ? atunci maxim = c sfarsit;
 
 listeaza "Maximul celor trei numere este:;
 listeaza maxim;
