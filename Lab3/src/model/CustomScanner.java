@@ -2,8 +2,7 @@ package model;
 
 import javafx.util.Pair;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -32,11 +31,11 @@ public class CustomScanner {
     private Map<Integer, String> ST = new HashMap<Integer, String>();
     private List<String> specialRelational = new ArrayList<String>();
     private List<String> regularRelational = new ArrayList<String>();
-    private int index = 0;
     private String stringConstant = "";
     private String charConstant = "";
     private int currentLine = 0;
-
+    private int capacity = 97;
+    private CustomHashTable hashTable = new CustomHashTable(capacity);
 
     public CustomScanner(String fileName) {
        this.fileName = fileName;
@@ -117,17 +116,22 @@ public class CustomScanner {
         return false;
     }
 
-    public void classifyTokens() {
+    public void classifyTokens() throws IOException {
         // Pair is token + line of token
+        PrintWriter pw = new PrintWriter("/Users/teodoradan/Desktop/Formal-Languages-and-Compiler-Design/Lab3/scanner_output/pif");
+        pw.printf("%-20s %s\n", "Token", "ST_Pos");
+
         Integer lastLine = 0;
         for (Pair<String, Integer> pair: this.detectedTokens) {
             if (isReservedOperatorSeparator(pair.getKey())) {
-                System.out.println("PIF " + pair.getKey() + " -1");
+                pw.printf("%-20s %d\n", pair.getKey(), -1);
             } else if (isIdentifier(pair.getKey()) || isConstant(pair.getKey())
                     || isStringConstant(pair.getKey()) || isCharConstant(pair.getKey())) {
                 // index is the position from the ST
-                System.out.println("PIF " + pair.getKey() + " " + index);
-                index++;
+
+                hashTable.insert(pair.getKey());
+                int position = hashTable.find(pair.getKey());
+                pw.printf("%-20s %d\n", pair.getKey(), position);
             } else {
                 System.out.println("LEXICAL ERROR " + pair.getKey() + " AT LINE " + (pair.getValue()));
             }
@@ -140,6 +144,20 @@ public class CustomScanner {
         if (!isCharLexicallyCorrect) {
             System.out.println("LEXICAL ERROR: SINGLE QUOTES NOT CLOSED AT LINE " + lastLine);
         }
+        pw.flush();
+    }
+
+    public void writeToSymbolTable() throws FileNotFoundException {
+        PrintWriter pw = new PrintWriter("/Users/teodoradan/Desktop/Formal-Languages-and-Compiler-Design/Lab3/scanner_output/st");
+        pw.printf("%-20s %s\n", "Symbol", "ST_Pos");
+        String[] symTable = hashTable.getSymTable();
+
+        for(int i = 0; i < capacity; i++) {
+            if (symTable[i] != null) {
+                pw.printf("%-20s %s\n", symTable[i], i);
+            }
+        }
+        pw.flush();
     }
 
     public void scan() {

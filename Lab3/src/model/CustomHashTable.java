@@ -34,14 +34,14 @@ public class CustomHashTable {
         // Check if already in sym table
         for (String s : symTable) {
             if (s != null && s.equals(identifier)) {
-                System.out.println("Already in sym table.");
+                //System.out.println("Already in sym table.");
                 return false;
             }
         }
         int hashValue = hashFunction(identifier);
         if (symTable[hashValue] == null) {
             symTable[hashValue] = identifier;
-            System.out.println("Insert " + identifier + " at position " + hashValue);
+            //System.out.println("Insert " + identifier + " at position " + hashValue);
             return true;
         }
         // Else, we have a collision
@@ -51,10 +51,10 @@ public class CustomHashTable {
         }
         if (symTable[nextAvailablePosition] == null) {
             symTable[nextAvailablePosition] = identifier;
-            System.out.println("Insert " + identifier + " at position " + nextAvailablePosition);
+            //System.out.println("Insert " + identifier + " at position " + nextAvailablePosition);
             return true;
         }
-        System.out.println("Insert failed.");
+        //System.out.println("Insert failed.");
         return false;
     }
 
@@ -76,6 +76,10 @@ public class CustomHashTable {
             hashValue ++;
         }
         return -1;
+    }
+
+    public String[] getSymTable() {
+        return symTable;
     }
 
     @Override
