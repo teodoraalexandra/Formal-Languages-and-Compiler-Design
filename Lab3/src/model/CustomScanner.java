@@ -149,6 +149,7 @@ public class CustomScanner {
 
     public void writeToSymbolTable() throws FileNotFoundException {
         PrintWriter pw = new PrintWriter("/Users/teodoradan/Desktop/Formal-Languages-and-Compiler-Design/Lab3/scanner_output/st");
+        pw.printf("%-20s %s\n", "Symbol Table as:", "Hash Table");
         pw.printf("%-20s %s\n", "Symbol", "ST_Pos");
         String[] symTable = hashTable.getSymTable();
 

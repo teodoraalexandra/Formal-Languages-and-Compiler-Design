@@ -1,7 +1,10 @@
 no
 citeste numar a;
 citeste numar 7b;
-citeste numar c;
+citeste numar -0;
+citeste numar +0;
+citeste numar 0;
+citeste numar -7;
 variabila numar maxim;
 
 este (a >= b) si (a >= c) ? atunci maxim = a sfarsit;

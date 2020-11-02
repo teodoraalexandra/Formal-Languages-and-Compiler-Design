@@ -6,6 +6,7 @@ a                    0
 ;                    -1
 citeste              -1
 numar                -1
+b                    1
 ;                    -1
 citeste              -1
 numar                -1
@@ -73,3 +74,10 @@ c                    2
 sfarsit              -1
 ;                    -1
 listeaza             -1
+"Maximul celor trei numere este:"  66
+;                    -1
+listeaza             -1
+maxim                55
+;                    -1
+gata                 -1
+.                    -1
