@@ -39,6 +39,23 @@ public class Main {
                     System.out.println(FA.getFinalStates());
                     System.out.println("\n");
                     break;
+                case "5":
+                    String message = FA.isDFA() ? "is a DFA" : "is NOT a DFA";
+                    System.out.println("The introduced FA " + message);
+                    System.out.println("\n");
+                    break;
+                case "6":
+                    if(!FA.isDFA()){
+                        System.out.println("FA needs to be a DFA.");
+                        break;
+                    }
+                    BufferedReader reader2 =  new BufferedReader(new InputStreamReader(System.in));
+                    System.out.println("Enter sequence: ");
+                    String sequence = reader2.readLine();
+                    String message2 = FA.isAccepted(sequence) ? "Sequence is accepted" : "Sequence is not accepted";
+                    System.out.println(message2);
+                    System.out.println("\n");
+                    break;
                 case "0":
                     System.exit(0);
                 default:
@@ -53,6 +70,8 @@ public class Main {
         System.out.println("2 - Show alphabet");
         System.out.println("3 - Show transitions");
         System.out.println("4 - Show final states");
+        System.out.println("5 - Is DFA?");
+        System.out.println("6 - Verify if a sequence is accepted by FA");
         System.out.println("0 - Exit \n");
     }
 }

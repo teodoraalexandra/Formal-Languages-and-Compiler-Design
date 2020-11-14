@@ -3,9 +3,11 @@ p,q,r
 ALPHABET
 a,b
 TRANSITIONS
-p,a,q
+p,a,q,r
 q,a,q
 q,b,r
 p,b,r
 FINAL STATES
 r
+INITIAL STATE
+p

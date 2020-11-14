@@ -12,6 +12,7 @@ public class FiniteAutomata {
     private List<String> alphabet;
     private List<Transition> transitionsList;
     private List<String> finalStates;
+    private String initialState;
     private String fileName;
 
     public FiniteAutomata(String fileName) {
@@ -20,6 +21,7 @@ public class FiniteAutomata {
         this.alphabet = new ArrayList<String>();
         this.transitionsList = new ArrayList<Transition>();
         this.finalStates = new ArrayList<String>();
+        this.initialState = "";
     }
 
     public void readFromFile() throws FileNotFoundException {
@@ -64,6 +66,10 @@ public class FiniteAutomata {
         String finalStates = scanner.nextLine();
         this.finalStates = Arrays.asList(finalStates.split(","));
 
+        // Initial state
+        String initialState = scanner.nextLine();
+        this.initialState = scanner.nextLine();
+
         scanner.close();
     }
 
@@ -81,5 +87,42 @@ public class FiniteAutomata {
 
     public List<String> getFinalStates() {
         return finalStates;
+    }
+
+    public String getInitialState() { return initialState; }
+
+    public boolean isDFA() {
+        for (Transition transition: transitionsList) {
+            if (transition.getEndState().size() > 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isAccepted(String seq) {
+        String currentState = this.initialState;
+        String[] sequence = seq.split("");
+        for (String character : sequence) {
+            String nextState = nextState(currentState, character);
+
+            System.out.println(currentState + " " + character + " " + nextState);
+
+            // Case: no state
+            if (nextState.equals("no-state-found")) return false;
+
+            currentState = nextState;
+        }
+        // Case: final state
+        return this.finalStates.contains(currentState);
+    }
+
+    private String nextState(String startState, String value) {
+        for (Transition transition: transitionsList) {
+            if (transition.getStartState().equals(startState) && transition.getValue().equals(value))
+                if (transition.getEndState().size() == 1)
+                    return transition.getEndState().get(0);
+        }
+        return "no-state-found";
     }
 }

@@ -22,6 +22,18 @@ public class Transition {
         this.endState = endState;
     }
 
+    public String getStartState() {
+        return startState;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public List<String> getEndState() {
+        return endState;
+    }
+
     @Override
     public String toString() {
         return "δ(" + startState + "," + value + ") = " + endState;

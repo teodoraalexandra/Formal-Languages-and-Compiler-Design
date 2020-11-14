@@ -9,3 +9,5 @@ q,b,r
 p,b,r
 FINAL STATES
 r
+INITIAL STATE
+p
