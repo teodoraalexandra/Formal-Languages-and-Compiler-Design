@@ -78,15 +78,33 @@ public class CustomScanner {
        }
     }
 
-    private Boolean isConstant(String token) {
-        return token.matches("\\-?[1-9]+[0-9]*|0")
+    private Boolean isConstant(String token) throws FileNotFoundException {
+        FiniteAutomata FA_constant = new FiniteAutomata("/Users/teodoradan/Desktop/Formal-Languages-and-Compiler-Design/Lab3/fa/constant");
+        FA_constant.readFromFile();
+        if(!FA_constant.isDFA()){
+            return false;
+        }
+
+        FiniteAutomata FA_identifier = new FiniteAutomata("/Users/teodoradan/Desktop/Formal-Languages-and-Compiler-Design/Lab3/fa/identifier");
+        FA_identifier.readFromFile();
+        if(!FA_identifier.isDFA()){
+            return false;
+        }
+        return FA_constant.isAccepted(token) || FA_identifier.isAccepted(token);
+        /*return token.matches("\\-?[1-9]+[0-9]*|0")
                 || token.matches("\"[a-zA-Z0-9 _]+\"")
                 || token.equals("True")
-                || token.equals("False");
+                || token.equals("False");*/
     }
 
-    private Boolean isIdentifier(String token){
-        return token.matches("(^[a-zA-Z][a-zA-Z0-9 _]*)");
+    private Boolean isIdentifier(String token) throws FileNotFoundException {
+        FiniteAutomata FA_identifier = new FiniteAutomata("/Users/teodoradan/Desktop/Formal-Languages-and-Compiler-Design/Lab3/fa/identifier");
+        FA_identifier.readFromFile();
+        if(!FA_identifier.isDFA()){
+            return false;
+        }
+        return FA_identifier.isAccepted(token);
+        /*return token.matches("(^[a-zA-Z][a-zA-Z0-9 _]*)");*/
     }
 
     private Boolean isStringConstant(String token) {
